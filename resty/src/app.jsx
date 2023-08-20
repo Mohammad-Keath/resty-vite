@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 
 import './app.scss';
 
@@ -12,7 +12,7 @@ import Results from './components/results';
 function App (){
   const [mydata,setMydata]= useState(null)
   const [reqparams,setReqparams]= useState({})
- 
+  const [dataArray, setDataArray] = useState([]);
 
   const callApi = (requestParams) => {
     const {method,url} = requestParams
@@ -20,9 +20,15 @@ function App (){
       method:method
     })
       .then(result => result.json())
-      .then(result => setMydata(result))
+      .then(result => {
+        setDataArray([...dataArray,result])
+        setMydata(result)})
+
     setReqparams(requestParams)
   }
+useEffect(() => {
+  callApi(requestParams);   
+}, [mydata]);
 
     return (
       <React.Fragment>
