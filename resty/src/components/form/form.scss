@@ -3,7 +3,9 @@ $radius: 40%;
 
 form {
   margin: 20px auto;
-  width: 90vw;
+  width: 80vw;
+  margin-left: 16em;
+
   
   label {
     display: flex;
@@ -29,7 +31,7 @@ form {
     min-width: 10%;
     max-width: 150px;
     border-radius: 0;
-    background-color: darken($backgroundColor,50);
+    background-color: inherit;
     color: $backgroundColor;
     cursor: pointer;
     option {
