@@ -1,18 +1,36 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useReducer } from 'react';
 
 import './app.scss';
 
-// Let's talk about using index.js and some other name in the component folder
-// There's pros and cons for each way of doing this ...
+import History from './components/history/history';
 import Header from './components/header';
 import Footer from './components/footer';
 import Form from './components/form';
 import Results from './components/results';
 
+const reducer = (state,action)=>{
+  switch(action.type){
+    case 'addToHistory':
+      return {...state,historyData : [action.payload,...state.historyData]}
+    case 'setDataArray':
+      return {...state,dataArray : [action.payload,...state.dataArray]}
+    case 'setMydata':
+      return {...state,mydata : action.payload}
+    default:
+      return state
+  }
+}
+
 function App (){
   const [mydata,setMydata]= useState(null)
-  const [reqparams,setReqparams]= useState({})
-  const [dataArray, setDataArray] = useState([]);
+ 
+
+  const initialState = {
+    historyData : [],
+    mydata :null,
+    dataArray:[]
+  }
+  const [state,dispatch] = useReducer(reducer,initialState)
 
   const callApi = (requestParams) => {
     const {method,url} = requestParams
@@ -21,22 +39,22 @@ function App (){
     })
       .then(result => result.json())
       .then(result => {
-        setDataArray([...dataArray,result])
-        setMydata(result)})
+        dispatch({type:'setDataArray',payload:result})
+        dispatch({type:'setMydata',payload:result})
+        dispatch({type:'addToHistory',payload:{method:method,url:url,result:result}})
+      })
 
-    setReqparams(requestParams)
   }
 useEffect(() => {
-  callApi(requestParams);   
-}, [mydata]);
+  console.log(state.historyData) 
+}, [state.mydata]);
 
     return (
       <React.Fragment>
         <Header />
-        <div>Request Method: {reqparams.method}</div>
-        <div>URL: {reqparams.url}</div>
         <Form handleApiCall={callApi} />
-        <Results data={mydata} />
+        <Results  data={state.mydata} />
+        <History dispatch={dispatch} state={state}/>
         <Footer />
       </React.Fragment>
     );
